@@ -37,6 +37,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   :root{--ink:#12333a;--line:#c9d3d6;--accent:#0f9aa8;--bg:#eef1f2;--panel:#fff;--muted:#607279;}
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);padding:20px}
+  .stickytop{position:sticky;top:0;z-index:100;background:var(--bg);margin:-20px -20px 0;padding:20px 20px 8px;box-shadow:0 6px 12px -6px rgba(0,0,0,.18)}
+  @media print{.stickytop{position:static;box-shadow:none}}
   .top{background:var(--ink);color:#fff;padding:16px 22px;border-radius:8px 8px 0 0;border-bottom:3px solid var(--accent)}
   .top h1{font-size:19px}
   .top p{font-size:11px;color:#9fb7bd;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
@@ -128,6 +130,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 </style>
 </head>
 <body>
+  <div class="stickytop">
   <div class="top">
     <h1>Gerador de Etiquetas — 150×100 mm</h1>
     <p>Gráfica, Dados Variáveis e Logística · Log&amp;Print</p>
@@ -156,6 +159,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     </div>
     <div id="msg" class="msg">Carregue a planilha e digite a OP, ou preencha manualmente ao lado.</div>
   </div>
+
+  </div><!-- /stickytop -->
 
   <div class="layout" id="layout">
     <div class="editor" id="editor">
