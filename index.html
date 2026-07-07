@@ -354,7 +354,8 @@ function gerar(){
   const bim=norm(first[COL.bim]);
   const cd=norm(first[COL.cd]);
   const tag = mode==='KIT' ? 'KIT' : 'AVULSO';
-  const bckit=norm(first[COL.sku]);   // sempre o ID_Código SKU do 1o item
+  // rodapé: KIT usa o código do kit; AVULSO usa o SKU do item
+  const bckit = mode==='KIT' ? (norm(first[COL.idKit])||norm(first[COL.sku])) : norm(first[COL.sku]);
   const skus=items.map(r=>({cod:norm(r[COL.sku]),des:norm(r[COL.desc]),fs:12}));
 
   M={marca,desc,qtd,serie,bim,cd,tag,kit:bckit,bcqty:String(qtd).padStart(4,'0'),skus,fs:{marca:46,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};
