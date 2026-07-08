@@ -112,8 +112,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .l-side .sblk:last-child{border-bottom:none}
   .l-side .st{font-size:12px;font-weight:bold}
   .l-side .sv{font-size:16px;margin-top:1mm;word-break:break-word;line-height:1.1}
-  .l-cod{border-right:1px solid #000;padding:2mm 1mm;line-height:1.7;text-align:center;display:flex;flex-direction:column;justify-content:flex-start}
-  .l-des{padding:2mm 1.5mm;line-height:1.7;text-align:center;display:flex;flex-direction:column;justify-content:flex-start}
+  .l-cod{border-right:1px solid #000;padding:2mm 2mm;line-height:1.7;text-align:left;display:flex;flex-direction:column;justify-content:flex-start}
+  .l-des{padding:2mm 2mm;line-height:1.7;text-align:left;display:flex;flex-direction:column;justify-content:flex-start}
   .l-cod .r,.l-des .r{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .l-foot{display:grid;grid-template-columns:40mm 1fr;min-height:24mm}
   .l-foot .tag{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;padding:3mm}
@@ -140,7 +140,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="up" id="drop">
       <input type="file" id="file" accept=".xlsx,.xlsm,.xls">
       <div>Arraste a planilha padrão aqui ou <span class="lk" onclick="document.getElementById('file').click()">clique para selecionar</span> · aba <b>PPG</b></div>
-      <div class="hint">Sem planilha? Preencha os campos ao lado manualmente.</div>
+      <div class="hint">Sem planilha? Preencha os campos ao lado manualmente. · <a href="#" onclick="limparPlanilha(event)" style="color:var(--accent)">Limpar planilha salva</a></div>
     </div>
     <div class="row">
       <div class="fld">
@@ -212,7 +212,7 @@ let M={};        // modelo editável
 function norm(s){return (s==null?'':String(s)).trim();}
 function blankModel(){return {marca:'',desc:'',qtd:'',serie:'',bim:'',cd:'',tag:'KIT',kit:'',bcqty:'',skus:[{cod:'',des:'',fs:12}],fs:{marca:26,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};}
 
-window.addEventListener('DOMContentLoaded',()=>{ M=blankModel(); fillEditor(); render(); });
+window.addEventListener('DOMContentLoaded',()=>{ M=blankModel(); fillEditor(); render(); restorePlanilha(); });
 
 // ---------- upload ----------
 const drop=document.getElementById('drop');
@@ -239,34 +239,68 @@ function idxExcl(header,excl,...needles){
   return -1;
 }
 
+// ---- persistência da planilha (IndexedDB) ----
+const DB_NAME='etiq_ppg',STORE='files',KEY='planilha';
+function idbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function idbSave(buf){try{const db=await idbOpen();await new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(buf,KEY);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});}catch(e){console.warn('idb save falhou',e);}}
+async function idbLoad(){try{const db=await idbOpen();return await new Promise((res,rej)=>{const tx=db.transaction(STORE,'readonly');const rq=tx.objectStore(STORE).get(KEY);rq.onsuccess=()=>res(rq.result||null);rq.onerror=()=>rej(rq.error);});}catch(e){return null;}}
+async function idbClear(){try{const db=await idbOpen();await new Promise(res=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(KEY);tx.oncomplete=res;});}catch(e){}}
+
+function parseBuffer(buf){
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets['PPG']||wb.Sheets[wb.SheetNames[0]];
+  if(!ws)throw new Error('Aba PPG não encontrada.');
+  const ref=XLSX.utils.decode_range(ws['!ref']);
+  const cap=Math.min(ref.e.r,50000);let last=0;
+  for(let r=1;r<=cap;r++){let has=false;for(let c=0;c<=ref.e.c;c++){const cell=ws[XLSX.utils.encode_cell({r,c})];if(cell&&cell.v!=null&&String(cell.v).trim()!==''){has=true;break;}}if(has)last=r;}
+  const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,range:{s:{r:0,c:0},e:{r:last,c:ref.e.c}}});
+  const H=rows[0]||[];
+  COL={
+    opKit:idx(H,'op do kit'), opItem:idx(H,'op do item'),
+    marca:idx(H,'marca'), bim:idx(H,'bimestre'),
+    idKit:idx(H,'id_código kit','id_codigo kit'), descKit:idx(H,'id_descrição kit','id_descricao kit'),
+    sku:idxExcl(H,['kit'],'id_código sku','id_codigo sku'), desc:idxExcl(H,['kit'],'id_descrição','id_descricao'),
+    serie:idx(H,'inf_série','inf_serie','série'), cd:idx(H,'des_cd envio','cd envio')
+  };
+  ROWS=rows;
+  buildOpIndex();
+}
+
 function loadFile(file){
   const msg=document.getElementById('msg');msg.className='msg';msg.textContent='Lendo planilha...';
   const rd=new FileReader();
-  rd.onload=e=>{
+  rd.onload=async e=>{
     try{
-      const wb=XLSX.read(e.target.result,{type:'array'});
-      const ws=wb.Sheets['PPG']||wb.Sheets[wb.SheetNames[0]];
-      if(!ws)throw new Error('Aba PPG não encontrada.');
-      const ref=XLSX.utils.decode_range(ws['!ref']);
-      const cap=Math.min(ref.e.r,50000);let last=0;
-      for(let r=1;r<=cap;r++){let has=false;for(let c=0;c<=ref.e.c;c++){const cell=ws[XLSX.utils.encode_cell({r,c})];if(cell&&cell.v!=null&&String(cell.v).trim()!==''){has=true;break;}}if(has)last=r;}
-      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,range:{s:{r:0,c:0},e:{r:last,c:ref.e.c}}});
-      const H=rows[0]||[];
-      COL={
-        opKit:idx(H,'op do kit'), opItem:idx(H,'op do item'),
-        marca:idx(H,'marca'), bim:idx(H,'bimestre'),
-        idKit:idx(H,'id_código kit','id_codigo kit'), descKit:idx(H,'id_descrição kit','id_descricao kit'),
-        sku:idxExcl(H,['kit'],'id_código sku','id_codigo sku'), desc:idxExcl(H,['kit'],'id_descrição','id_descricao'),
-        serie:idx(H,'inf_série','inf_serie','série'), cd:idx(H,'des_cd envio','cd envio')
-      };
-      ROWS=rows;
-      // índice de OPs para busca rápida (op, tipo, descrição)
-      buildOpIndex();
+      const buf=e.target.result;
+      parseBuffer(buf);
+      await idbSave(buf);   // persiste para sobreviver ao F5
       drop.classList.add('ok');
-      msg.className='msg ok';msg.textContent='Planilha carregada: '+OPIDX.length+' OPs disponíveis. Comece a digitar a OP.';
+      msg.className='msg ok';msg.textContent='Planilha carregada e salva: '+OPIDX.length+' OPs. Continua disponível após atualizar a página.';
     }catch(err){msg.className='msg err';msg.textContent='Erro: '+err.message;}
   };
   rd.readAsArrayBuffer(file);
+}
+
+// restaura planilha salva ao abrir/atualizar
+async function restorePlanilha(){
+  const msg=document.getElementById('msg');
+  const buf=await idbLoad();
+  if(!buf)return;
+  try{
+    parseBuffer(buf);
+    drop.classList.add('ok');
+    msg.className='msg ok';msg.textContent='Planilha restaurada da memória: '+OPIDX.length+' OPs. (Para trocar, carregue outra ou use "Limpar planilha".)';
+  }catch(e){/* ignora buffer inválido */}
+}
+
+async function limparPlanilha(ev){
+  if(ev)ev.preventDefault();
+  await idbClear();
+  ROWS=null;OPIDX=[];COL={};
+  document.getElementById('op').value='';
+  document.getElementById('opResults').classList.remove('show');
+  drop.classList.remove('ok');
+  const msg=document.getElementById('msg');msg.className='msg';msg.textContent='Planilha removida da memória. Carregue uma nova quando quiser.';
 }
 
 // ---------- índice + busca rápida de OP ----------
