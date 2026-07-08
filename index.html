@@ -96,7 +96,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   /* ===== ETIQUETA 150x100mm ===== */
   .label{width:150mm;height:100mm;background:#fff;border:1.2px solid #000;font-family:Arial,sans-serif;color:#000;display:grid;overflow:hidden;grid-template-rows:auto auto 1fr auto;}
   .l-top{display:grid;grid-template-columns:40mm 1fr;border-bottom:1.2px solid #000}
-  .l-top .marca{grid-row:1 / span 2;border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:bold;word-break:break-word;text-align:center;padding:2mm;line-height:1}
+  .l-top .marca{grid-row:1 / span 2;border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;word-break:break-word;text-align:center;padding:2mm;line-height:1}
   .l-top .desc{border-bottom:1.2px solid #000;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:bold;padding:2mm 4mm;min-height:13mm;line-height:1.2}
   .l-top .qtyline{display:grid;grid-template-columns:32mm 20mm 1fr;min-height:16mm}
   .l-top .qtyline .lbl{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;text-align:center;padding:2mm}
@@ -181,7 +181,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div class="ed-fld"><label>Código de barras (quantidade)</label><input id="e_bcqty" oninput="apply()"></div>
 
       <h3 style="margin-top:6px">Tamanho da fonte</h3>
-      <div class="fontrow"><label>Marca</label><button onclick="chgFont('marca',-2)">–</button><span class="val" id="fv_marca">46</span><button onclick="chgFont('marca',2)">+</button></div>
+      <div class="fontrow"><label>Marca</label><button onclick="chgFont('marca',-2)">–</button><span class="val" id="fv_marca">26</span><button onclick="chgFont('marca',2)">+</button></div>
       <div class="fontrow"><label>Descrição do kit/item</label><button onclick="chgFont('desc',-1)">–</button><span class="val" id="fv_desc">15</span><button onclick="chgFont('desc',1)">+</button></div>
       <div class="fontrow"><label>Ano/Série</label><button onclick="chgFont('serie',-1)">–</button><span class="val" id="fv_serie">16</span><button onclick="chgFont('serie',1)">+</button></div>
       <div class="fontrow"><label>Bimestre</label><button onclick="chgFont('bim',-1)">–</button><span class="val" id="fv_bim">16</span><button onclick="chgFont('bim',1)">+</button></div>
@@ -210,7 +210,7 @@ let COL={};      // índices de coluna por nome
 let M={};        // modelo editável
 
 function norm(s){return (s==null?'':String(s)).trim();}
-function blankModel(){return {marca:'',desc:'',qtd:'',serie:'',bim:'',cd:'',tag:'KIT',kit:'',bcqty:'',skus:[{cod:'',des:'',fs:12}],fs:{marca:46,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};}
+function blankModel(){return {marca:'',desc:'',qtd:'',serie:'',bim:'',cd:'',tag:'KIT',kit:'',bcqty:'',skus:[{cod:'',des:'',fs:12}],fs:{marca:26,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};}
 
 window.addEventListener('DOMContentLoaded',()=>{ M=blankModel(); fillEditor(); render(); });
 
@@ -224,6 +224,18 @@ document.getElementById('file').addEventListener('change',e=>{if(e.target.files[
 function idx(header,...needles){
   const clean=s=>norm(s).toLowerCase().replace(/\s+/g,'');
   for(let c=0;c<header.length;c++){const h=clean(header[c]);for(const n of needles){if(h.includes(clean(n)))return c;}}
+  return -1;
+}
+
+// igual a idx, mas ignora colunas que contenham algum termo de exclusão (ex: "kit")
+function idxExcl(header,excl,...needles){
+  const clean=s=>norm(s).toLowerCase().replace(/\s+/g,'');
+  const ex=excl.map(clean);
+  for(let c=0;c<header.length;c++){
+    const h=clean(header[c]);
+    if(ex.some(e=>h.includes(e)))continue;
+    for(const n of needles){if(h.includes(clean(n)))return c;}
+  }
   return -1;
 }
 
@@ -244,7 +256,7 @@ function loadFile(file){
         opKit:idx(H,'op do kit'), opItem:idx(H,'op do item'),
         marca:idx(H,'marca'), bim:idx(H,'bimestre'),
         idKit:idx(H,'id_código kit','id_codigo kit'), descKit:idx(H,'id_descrição kit','id_descricao kit'),
-        sku:idx(H,'id_código sku','id_codigo sku'), desc:idx(H,'id_descrição','id_descricao'),
+        sku:idxExcl(H,['kit'],'id_código sku','id_codigo sku'), desc:idxExcl(H,['kit'],'id_descrição','id_descricao'),
         serie:idx(H,'inf_série','inf_serie','série'), cd:idx(H,'des_cd envio','cd envio')
       };
       ROWS=rows;
@@ -358,7 +370,7 @@ function gerar(){
   const bckit = mode==='KIT' ? (norm(first[COL.idKit])||norm(first[COL.sku])) : norm(first[COL.sku]);
   const skus=items.map(r=>({cod:norm(r[COL.sku]),des:norm(r[COL.desc]),fs:12}));
 
-  M={marca,desc,qtd,serie,bim,cd,tag,kit:bckit,bcqty:String(qtd).padStart(4,'0'),skus,fs:{marca:46,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};
+  M={marca,desc,qtd,serie,bim,cd,tag,kit:bckit,bcqty:String(qtd).padStart(4,'0'),skus,fs:{marca:26,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};
   fillEditor();render();
   msg.className='msg ok';msg.textContent=mode+' · '+items.length+' item(ns) carregado(s).';
 }
