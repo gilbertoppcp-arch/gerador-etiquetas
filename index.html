@@ -93,32 +93,32 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .preview{flex:0 0 auto}
   .preview h3{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;text-align:center}
 
-  /* ===== ETIQUETA 150x100mm ===== */
-  .label{width:150mm;height:100mm;background:#fff;border:1.2px solid #000;font-family:Arial,sans-serif;color:#000;display:grid;overflow:hidden;grid-template-rows:auto auto 1fr auto;}
-  .l-top{display:grid;grid-template-columns:40mm 1fr;border-bottom:1.2px solid #000;height:25mm}
-  .l-top .marca{grid-row:1 / span 2;border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;word-break:break-word;text-align:center;padding:2mm;line-height:1}
-  .l-top .desc{border-bottom:1.2px solid #000;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:bold;padding:1mm 4mm;height:9mm;line-height:1.15;overflow:hidden}
-  .l-top .qtyline{display:grid;grid-template-columns:24mm 18mm 1fr;height:16mm}
+  /* ===== ETIQUETA 150x100mm (área útil 142x89mm) ===== */
+  .label{width:150mm;height:100mm;background:#fff;box-sizing:border-box;padding:5.5mm 4mm;font-family:Arial,sans-serif;color:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .layout142{width:142mm;height:89mm;border:1.2px solid #000;display:grid;grid-template-rows:23mm 5mm 40mm 21mm;overflow:hidden}
+  .l-top{display:grid;grid-template-columns:21mm 1fr;border-bottom:1.2px solid #000;height:23mm}
+  .l-top .marca{grid-row:1 / span 2;border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;word-break:break-word;text-align:center;padding:1mm;line-height:1}
+  .l-top .desc{border-bottom:1.2px solid #000;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:bold;padding:1mm 3mm;height:7mm;line-height:1.1;overflow:hidden}
+  .l-top .qtyline{display:grid;grid-template-columns:31mm 28mm 62mm;height:16mm}
   .l-top .qtyline .lbl{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;text-align:center;padding:1mm}
   .l-top .qtyline .num{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:bold}
-  .l-top .qtyline .bc{display:flex;align-items:center;justify-content:center;padding:2mm}
+  .l-top .qtyline .bc{display:flex;align-items:center;justify-content:center;padding:1mm}
   .l-top .qtyline .bc svg{max-width:100%;max-height:14mm}
-  .l-colh{display:grid;grid-template-columns:40mm 42mm 1fr;border-bottom:1.2px solid #000;font-size:13px;font-weight:bold}
-  .l-colh div{border-right:1px solid #000;padding:1.5mm;text-align:center}
+  .l-colh{display:grid;grid-template-columns:21mm 31mm 90mm;border-bottom:1.2px solid #000;font-size:13px;font-weight:bold;height:5mm}
+  .l-colh div{border-right:1px solid #000;padding:0.5mm;text-align:center;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .l-colh div:last-child{border-right:none}
-  .l-body{display:grid;grid-template-columns:40mm 42mm 1fr;border-bottom:1.2px solid #000}
+  .l-body{display:grid;grid-template-columns:21mm 31mm 90mm;border-bottom:1.2px solid #000;height:40mm}
   .l-side{border-right:1px solid #000;display:flex;flex-direction:column}
-  .l-side .sblk{border-bottom:1px solid #000;padding:1.5mm 1mm;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center}
-  .l-side .sblk:last-child{border-bottom:none}
-  .l-side .st{font-size:12px;font-weight:bold}
-  .l-side .sv{font-size:16px;margin-top:1mm;word-break:break-word;line-height:1.1}
-  .l-cod{border-right:1px solid #000;padding:2mm 2mm;line-height:1.7;text-align:left;display:flex;flex-direction:column;justify-content:flex-start}
-  .l-des{padding:2mm 2mm;line-height:1.7;text-align:left;display:flex;flex-direction:column;justify-content:flex-start}
-  .l-cod .r,.l-des .r{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .l-foot{display:grid;grid-template-columns:40mm 1fr;height:25mm}
-  .l-foot .tag{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:bold;padding:3mm}
-  .l-foot .bc{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3mm}
-  .l-foot .bc svg{max-width:92%;max-height:18mm}
+  .l-side .sblk{border-bottom:1px solid #000;padding:1mm;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center}
+  .l-side .st{font-size:13px;font-weight:bold;border-bottom:1px solid #000;padding-bottom:0.8mm;margin:0 -1mm 0.8mm -1mm;width:calc(100% + 2mm)}
+  .l-side .sv{font-size:15px;font-weight:bold;margin-top:1mm;word-break:break-word;line-height:1.1}
+  .l-cod{border-right:1px solid #000;padding:2mm 2mm;line-height:1.7;text-align:left;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;overflow:hidden}
+  .l-des{padding:2mm 2mm;line-height:1.7;text-align:left;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;overflow:hidden}
+  .l-cod .r,.l-des .r{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;max-width:100%}
+  .l-foot{display:grid;grid-template-columns:21mm 121mm;height:21mm}
+  .l-foot .tag{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;padding:2mm}
+  .l-foot .bc{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm}
+  .l-foot .bc svg{max-width:92%;max-height:17mm}
   .actions{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   @page{size:150mm 100mm;margin:0}
   @media print{
@@ -185,8 +185,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div class="fontrow"><label>Descrição do kit/item</label><button onclick="chgFont('desc',-1)">–</button><span class="val" id="fv_desc">15</span><button onclick="chgFont('desc',1)">+</button></div>
       <div class="fontrow"><label>Ano/Série</label><button onclick="chgFont('serie',-1)">–</button><span class="val" id="fv_serie">16</span><button onclick="chgFont('serie',1)">+</button></div>
       <div class="fontrow"><label>Bimestre</label><button onclick="chgFont('bim',-1)">–</button><span class="val" id="fv_bim">16</span><button onclick="chgFont('bim',1)">+</button></div>
-      <div class="fontrow"><label>CD Envio</label><button onclick="chgFont('cd',-1)">–</button><span class="val" id="fv_cd">16</span><button onclick="chgFont('cd',1)">+</button></div>
-      <div class="fontrow"><label>Tag (rodapé)</label><button onclick="chgFont('tag',-2)">–</button><span class="val" id="fv_tag">26</span><button onclick="chgFont('tag',2)">+</button></div>
+      <div class="fontrow"><label>CD Envio</label><button onclick="chgFont('cd',-1)">–</button><span class="val" id="fv_cd">12</span><button onclick="chgFont('cd',1)">+</button></div>
+      <div class="fontrow"><label>Tag (rodapé)</label><button onclick="chgFont('tag',-2)">–</button><span class="val" id="fv_tag">20</span><button onclick="chgFont('tag',2)">+</button></div>
       <div class="fontrow" style="background:#e6f7f9"><label><b>Todos os itens (SKUs)</b></label><button onclick="chgFont('itens',-1)">–</button><span class="val" id="fv_itens">12</span><button onclick="chgFont('itens',1)">+</button></div>
 
       <h3 style="margin-top:18px">Itens (SKUs)</h3>
@@ -210,7 +210,7 @@ let COL={};      // índices de coluna por nome
 let M={};        // modelo editável
 
 function norm(s){return (s==null?'':String(s)).trim();}
-function blankModel(){return {marca:'',desc:'',qtd:'',serie:'',bim:'',cd:'',tag:'KIT',kit:'',bcqty:'',skus:[{cod:'',des:'',fs:12}],fs:{marca:26,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};}
+function blankModel(){return {marca:'',desc:'',qtd:'',serie:'',bim:'',cd:'',tag:'KIT',kit:'',bcqty:'',skus:[{cod:'',des:'',fs:12}],fs:{marca:20,desc:15,serie:16,bim:16,cd:12,tag:20,itens:12}};}
 
 window.addEventListener('DOMContentLoaded',()=>{ M=blankModel(); fillEditor(); render(); restorePlanilha(); });
 
@@ -404,7 +404,7 @@ function gerar(){
   const bckit = mode==='KIT' ? (norm(first[COL.idKit])||norm(first[COL.sku])) : norm(first[COL.sku]);
   const skus=items.map(r=>({cod:norm(r[COL.sku]),des:norm(r[COL.desc]),fs:12}));
 
-  M={marca,desc,qtd,serie,bim,cd,tag,kit:bckit,bcqty:String(qtd).padStart(4,'0'),skus,fs:{marca:26,desc:15,serie:16,bim:16,cd:16,tag:26,itens:12}};
+  M={marca,desc,qtd,serie,bim,cd,tag,kit:bckit,bcqty:String(qtd).padStart(4,'0'),skus,fs:{marca:20,desc:15,serie:16,bim:16,cd:12,tag:20,itens:12}};
   fillEditor();render();
   msg.className='msg ok';msg.textContent=mode+' · '+items.length+' item(ns) carregado(s).';
 }
@@ -473,7 +473,7 @@ function render(){
     desRows+=`<div class="r" style="font-size:${fs}px">${esc(r.des)}</div>`;
   });
   document.getElementById('labelWrap').innerHTML=`
-  <div class="label">
+  <div class="label"><div class="layout142">
     <div class="l-top">
       <div class="marca" style="font-size:${M.fs.marca}px">${esc(M.marca)}</div>
       <div class="desc" style="font-size:${M.fs.desc}px">${esc(M.desc)}</div>
@@ -497,7 +497,7 @@ function render(){
       <div class="tag" style="font-size:${M.fs.tag}px">${esc(M.tag)}</div>
       <div class="bc"><svg id="bcKit"></svg></div>
     </div>
-  </div>`;
+  </div></div>`;
   try{if(M.bcqty)JsBarcode("#bcQty",M.bcqty,{format:"CODE128",displayValue:true,fontSize:11,height:36,margin:2});}catch(e){}
   try{if(M.kit)JsBarcode("#bcKit",M.kit,{format:"CODE128",displayValue:true,fontSize:15,height:48,margin:2});}catch(e){}
 }
