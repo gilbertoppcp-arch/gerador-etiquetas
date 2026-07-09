@@ -39,7 +39,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);padding:20px}
   .stickytop{position:sticky;top:0;z-index:100;background:var(--bg);margin:-20px -20px 0;padding:20px 20px 8px;box-shadow:0 6px 12px -6px rgba(0,0,0,.18)}
   @media print{.stickytop{position:static;box-shadow:none}}
-  .top{background:var(--ink);color:#fff;padding:16px 22px;border-radius:8px 8px 0 0;border-bottom:3px solid var(--accent)}
+  .top{background:var(--ink);color:#fff;padding:16px 22px;border-radius:8px 8px 0 0;border-bottom:3px solid var(--accent);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .uploadHdr{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .uploadHdr button{white-space:nowrap;background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.18);border-radius:999px;padding:10px 20px;display:inline-flex;align-items:center;gap:8px}
+  .uploadHdr button:hover{filter:none;background:#f0fbfc;box-shadow:0 4px 12px rgba(0,0,0,.24);transform:translateY(-1px)}
+  .uploadHdr a{color:#bfeaee;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;border:1px solid rgba(191,234,238,.35);padding:9px 14px;border-radius:999px;transition:background .12s ease,color .12s ease}
+  .uploadHdr a:hover{background:rgba(191,234,238,.12);color:#fff}
   .top h1{font-size:19px}
   .top p{font-size:11px;color:#9fb7bd;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
   .card{background:var(--panel);border:1px solid var(--line);border-top:none;padding:18px 22px}
@@ -48,10 +53,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .fld label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
   .fld input,.fld select{padding:9px 11px;border:1px solid var(--line);border-radius:6px;font-size:14px;min-width:170px}
   .fld input:focus,.fld select:focus{outline:2px solid var(--accent);border-color:var(--accent)}
-  button{padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
-  button:hover{filter:brightness(1.08)}
-  button.sec{background:#fff;color:var(--ink);border:1px solid var(--line)}
-  button:disabled{opacity:.5;cursor:not-allowed}
+  button{padding:11px 20px;background:linear-gradient(180deg,#12aab8,var(--accent));color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(15,154,168,.35);transition:transform .12s ease,box-shadow .12s ease,filter .12s ease;letter-spacing:.1px}
+  button:hover{filter:brightness(1.06);box-shadow:0 4px 10px rgba(15,154,168,.45);transform:translateY(-1px)}
+  button:active{transform:translateY(0);box-shadow:0 2px 4px rgba(15,154,168,.35)}
+  button.sec{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:0 1px 3px rgba(18,51,58,.08)}
+  button.sec:hover{filter:none;background:#f5fbfc;border-color:var(--accent);box-shadow:0 3px 8px rgba(18,51,58,.12)}
+  button:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
   .up{border:2px dashed var(--line);border-radius:8px;padding:14px;text-align:center;background:#f8fafb;margin-bottom:16px}
   .up.ok{border-color:var(--accent);background:#f0fbfc}
   .up input{display:none}
@@ -120,28 +127,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .l-foot .bc{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm}
   .l-foot .bc svg{max-width:92%;max-height:17mm}
   .actions{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  @page{size:150mm 100mm;margin:0}
   @media print{
     body{background:#fff;padding:0}
-    .top,.card,.editor,.actions,.msg,.preview h3{display:none}
-    .layout{margin:0;gap:0;display:block}.preview{width:150mm}
-    .label{border:1.2px solid #000;page-break-after:always}
+    .top,.card,.editor,.actions,.msg{display:none}
+    .layout{margin:0;gap:0;display:block}
+    .label{border:none;page-break-after:always}
+    /* modo principal: mostra só a etiqueta 150x100, esconde o bloco shrink */
+    body.print-main #shrinkPreview{display:none !important}
+    body.print-main .preview h3{display:none}
+    body.print-main .preview{width:150mm}
+    /* modo shrink: esconde tudo do bloco principal, mostra só a etiqueta shrink */
+    body.print-shrink #mainPreviewBlock > h3,
+    body.print-shrink #labelWrap,
+    body.print-shrink #mainPreviewBlock > .actions{display:none !important}
+    body.print-shrink #shrinkPreview{display:flex !important;align-items:center;justify-content:center;margin:0;padding:0;border:none}
+    body.print-shrink #shrinkPreview h3{display:none !important}
+    body.print-shrink .preview{width:48mm}
   }
+
+  /* ===== ETIQUETA SHRINK 48x18mm (sem borda) ===== */
+  .shrink-label{width:48mm;height:18mm;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden;font-family:Arial,sans-serif;color:#000}
+  .shrink-label svg{display:block;max-width:96%;max-height:17mm}
 </style>
+<style id="pagesizeStyle">@page{size:150mm 100mm;margin:0}</style>
 </head>
 <body>
   <div class="stickytop">
   <div class="top">
-    <h1>Gerador de Etiquetas — 150×100 mm</h1>
-    <p>Gráfica, Dados Variáveis e Logística · Log&amp;Print</p>
+    <div>
+      <h1>Gerador de Etiquetas — 150×100 mm</h1>
+      <p>Gráfica, Dados Variáveis e Logística · Log&amp;Print</p>
+    </div>
+    <div class="uploadHdr">
+      <input type="file" id="file" accept=".xlsx,.xlsm,.xls" style="display:none">
+      <button class="sec" onclick="document.getElementById('file').click()">📄 Carregar planilha</button>
+      <a href="#" onclick="limparPlanilha(event)">Limpar planilha salva</a>
+    </div>
   </div>
 
   <div class="card">
-    <div class="up" id="drop">
-      <input type="file" id="file" accept=".xlsx,.xlsm,.xls">
-      <div>Arraste a planilha padrão aqui ou <span class="lk" onclick="document.getElementById('file').click()">clique para selecionar</span> · aba <b>PPG</b></div>
-      <div class="hint">Sem planilha? Preencha os campos ao lado manualmente. · <a href="#" onclick="limparPlanilha(event)" style="color:var(--accent)">Limpar planilha salva</a></div>
-    </div>
+    <div id="drop" style="display:none"></div>
     <div class="row">
       <div class="fld">
         <label>Buscar por OP (Kit ou Item)</label>
@@ -156,6 +181,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <input id="qtd" type="number" min="1" value="6" style="min-width:110px">
       </div>
       <button id="btnGerar" onclick="gerar()">Gerar etiqueta</button>
+      <button class="sec" onclick="limparOP()">Limpar OP</button>
     </div>
     <div id="msg" class="msg">Carregue a planilha e digite a OP, ou preencha manualmente ao lado.</div>
   </div>
@@ -194,12 +220,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <button class="add" onclick="addSku()">+ Adicionar item</button>
     </div>
 
-    <div class="preview">
+    <div class="preview" id="mainPreviewBlock">
+      <div id="shrinkPreview" style="display:none;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--line);width:100%;text-align:center">
+        <h3>Etiqueta shrink (48×18 mm) — só para KIT</h3>
+        <div id="shrinkWrap" style="display:flex;justify-content:center"></div>
+        <div class="actions">
+          <button class="sec" onclick="imprimirShrink()">Imprimir shrink (48×18)</button>
+        </div>
+      </div>
+
       <h3>Pré-visualização (150×100 mm)</h3>
       <div id="labelWrap"></div>
       <div class="actions">
-        <button class="sec" onclick="window.print()">Imprimir / PDF</button>
-        <button class="sec" onclick="gerar()">Recarregar da planilha</button>
+        <button class="sec" onclick="imprimirPrincipal()">Imprimir / PDF (150×100)</button>
       </div>
     </div>
   </div>
@@ -291,6 +324,12 @@ async function restorePlanilha(){
     drop.classList.add('ok');
     msg.className='msg ok';msg.textContent='Planilha restaurada da memória: '+OPIDX.length+' OPs. (Para trocar, carregue outra ou use "Limpar planilha".)';
   }catch(e){/* ignora buffer inválido */}
+}
+
+function limparOP(){
+  document.getElementById('op').value='';
+  document.getElementById('opResults').classList.remove('show');
+  document.getElementById('op').focus();
 }
 
 async function limparPlanilha(ev){
@@ -500,7 +539,43 @@ function render(){
   </div></div>`;
   try{if(M.bcqty)JsBarcode("#bcQty",M.bcqty,{format:"CODE128",displayValue:true,fontSize:11,height:36,margin:2});}catch(e){}
   try{if(M.kit)JsBarcode("#bcKit",M.kit,{format:"CODE128",displayValue:true,fontSize:15,height:48,margin:2});}catch(e){}
+  renderShrink();
 }
+
+// ---------- etiqueta shrink 18x48mm (só quando KIT) ----------
+function renderShrink(){
+  const box=document.getElementById('shrinkPreview');
+  if(M.tag!=='KIT' || !M.kit){ box.style.display='none'; return; }
+  box.style.display='block';
+  document.getElementById('shrinkWrap').innerHTML=`
+    <div class="shrink-label">
+      <svg id="bcShrink"></svg>
+    </div>`;
+  try{ JsBarcode("#bcShrink", M.kit, {format:"CODE128",displayValue:true,fontSize:9,height:32,width:1.1,margin:0,textMargin:1}); }catch(e){}
+}
+
+// ---------- impressão com @page dinâmico por etiqueta ----------
+function setPageSize(css){ document.getElementById('pagesizeStyle').textContent = css; }
+
+function imprimirPrincipal(){
+  setPageSize('@page{size:150mm 100mm;margin:0}');
+  document.body.classList.remove('print-shrink');
+  document.body.classList.add('print-main');
+  window.print();
+}
+
+function imprimirShrink(){
+  if(M.tag!=='KIT'){ alert('A etiqueta shrink só se aplica a KIT.'); return; }
+  setPageSize('@page{size:48mm 18mm;margin:0}');
+  document.body.classList.remove('print-main');
+  document.body.classList.add('print-shrink');
+  window.print();
+}
+
+window.addEventListener('afterprint',()=>{
+  document.body.classList.remove('print-main','print-shrink');
+  setPageSize('@page{size:150mm 100mm;margin:0}');
+});
 </script>
 </body>
 </html>
