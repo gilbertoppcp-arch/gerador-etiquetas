@@ -104,13 +104,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .label{width:150mm;height:100mm;background:#fff;box-sizing:border-box;padding:5.5mm 4mm;font-family:Arial,sans-serif;color:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .layout142{width:142mm;height:89mm;border:1.2px solid #000;display:grid;grid-template-rows:23mm 5mm 40mm 21mm;overflow:hidden}
   .l-top{display:grid;grid-template-columns:21mm 1fr;border-bottom:1.2px solid #000;height:23mm}
+  .marca-arcoplus{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1.15}
+  .marca-nome{font-weight:bold}
+  .marca-addr-line{font-size:0.34em;font-weight:normal;letter-spacing:.2px}
   .l-top .marca{grid-row:1 / span 2;border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;word-break:break-word;text-align:center;padding:1mm;line-height:1}
   .l-top .desc{border-bottom:1.2px solid #000;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:bold;padding:1mm 3mm;height:7mm;line-height:1.1;overflow:hidden}
   .l-top .qtyline{display:grid;grid-template-columns:31mm 28mm 62mm;height:16mm}
+  .l-top .qtyline.arcoplus{grid-template-columns:31mm 28mm 20mm 42mm}
   .l-top .qtyline .lbl{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;text-align:center;padding:1mm}
+  .l-top .qtyline .lote-lbl{font-size:10px}
   .l-top .qtyline .num{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:bold}
   .l-top .qtyline .bc{display:flex;align-items:center;justify-content:center;padding:1mm}
-  .l-top .qtyline .bc svg{max-width:100%;max-height:14mm}
+  .l-top .qtyline .bc svg{max-width:100%;max-height:15mm}
   .l-colh{display:grid;grid-template-columns:21mm 31mm 90mm;border-bottom:1.2px solid #000;font-size:13px;font-weight:bold;height:5mm}
   .l-colh div{border-right:1px solid #000;padding:0.5mm;text-align:center;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .l-colh div:last-child{border-right:none}
@@ -126,6 +131,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .l-foot .tag{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;padding:2mm}
   .l-foot .bc{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2mm}
   .l-foot .bc svg{max-width:92%;max-height:17mm}
+  /* ARCOPLUS: coluna esquerda um pouco mais larga para nome+endereço caberem numa linha */
+  .layout142.arco .l-top{grid-template-columns:34mm 1fr}
+  .layout142.arco .l-foot{grid-template-columns:34mm 1fr}
+  .layout142.arco .l-colh{grid-template-columns:34mm 28mm 80mm}
+  .layout142.arco .l-body{grid-template-columns:34mm 28mm 80mm}
+  /* faixa QUANTIDADE/LOTE precisa somar 108mm (142-34) para caber sem estourar,
+     e a 1ª divisória (após QUANTIDADE) fica em 28mm para alinhar com a linha CÓDIGO/DESCRIÇÃO */
+  .layout142.arco .qtyline.arcoplus{grid-template-columns:28mm 25mm 18mm 37mm}
   .actions{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   @media print{
     body{background:#fff;padding:0}
@@ -136,18 +149,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     body.print-main #shrinkPreview{display:none !important}
     body.print-main .preview h3{display:none}
     body.print-main .preview{width:150mm}
-    /* modo shrink: esconde tudo do bloco principal, mostra só a etiqueta shrink */
-    body.print-shrink #mainPreviewBlock > h3,
-    body.print-shrink #labelWrap,
-    body.print-shrink #mainPreviewBlock > .actions{display:none !important}
-    body.print-shrink #shrinkPreview{display:flex !important;align-items:center;justify-content:center;margin:0;padding:0;border:none}
-    body.print-shrink #shrinkPreview h3{display:none !important}
-    body.print-shrink .preview{width:48mm}
+    /* modo shrink (KIT ou LOTE): esconde tudo do bloco principal, mostra só a etiqueta shrink alvo */
+    body.print-shrink-kit #mainPreviewBlock > h3,
+    body.print-shrink-kit #labelWrap,
+    body.print-shrink-kit #mainPreviewBlock > .actions,
+    body.print-shrink-lote #mainPreviewBlock > h3,
+    body.print-shrink-lote #labelWrap,
+    body.print-shrink-lote #mainPreviewBlock > .actions{display:none !important}
+    body.print-shrink-kit #shrinkPreview,
+    body.print-shrink-lote #shrinkPreview{display:block !important;margin:0 !important;padding:0 !important;border:none !important}
+    body.print-shrink-kit #shrinkPreview h3,
+    body.print-shrink-kit #shrinkPreview .hint,
+    body.print-shrink-kit #shrinkPreview .actions,
+    body.print-shrink-lote #shrinkPreview h3,
+    body.print-shrink-lote #shrinkPreview .hint,
+    body.print-shrink-lote #shrinkPreview .actions{display:none !important}
+    /* KIT: mostra só o barcode do kit, esconde o bloco do lote inteiro */
+    body.print-shrink-kit #shrinkLoteBlock{display:none !important}
+    /* LOTE: mostra só o barcode do lote, esconde o do kit */
+    body.print-shrink-lote #shrinkWrap{display:none !important}
+    body.print-shrink-lote #shrinkLoteBlock{margin:0 !important;padding:0 !important;border:none !important}
+    body.print-shrink-kit .preview,
+    body.print-shrink-lote .preview{width:48mm}
   }
 
   /* ===== ETIQUETA SHRINK 48x18mm (sem borda) ===== */
-  .shrink-label{width:48mm;height:18mm;display:flex;align-items:center;justify-content:center;background:#fff;overflow:hidden;font-family:Arial,sans-serif;color:#000}
-  .shrink-label svg{display:block;max-width:96%;max-height:17mm}
+  .shrink-label{width:48mm;height:18mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4mm;background:#fff;overflow:hidden;font-family:Arial,sans-serif;color:#000;padding:0.5mm 0;box-sizing:border-box}
+  .shrink-label .stitle{font-size:6.4px;font-weight:bold;text-align:center;line-height:1.05;max-width:96%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .shrink-label svg{display:block;max-width:96%;max-height:12.5mm}
 </style>
 <style id="pagesizeStyle">@page{size:150mm 100mm;margin:0}</style>
 </head>
@@ -197,6 +226,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <div class="ed-fld" style="flex:1"><label>Quantidade</label><input id="e_qtd" type="number" oninput="apply()"></div>
         <div class="ed-fld" style="flex:1"><label>Ano/Série</label><input id="e_serie" oninput="apply()"></div>
       </div>
+      <div class="ed-fld"><label>Lote (só aparece se Marca = ARCOPLUS)</label><input id="e_lote" oninput="apply()"></div>
       <div class="row" style="gap:10px">
         <div class="ed-fld" style="flex:1"><label>Bimestre</label><input id="e_bim" oninput="apply()"></div>
         <div class="ed-fld" style="flex:1"><label>CD Envio</label><input id="e_cd" oninput="apply()"></div>
@@ -225,7 +255,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <h3>Etiqueta shrink (48×18 mm) — só para KIT</h3>
         <div id="shrinkWrap" style="display:flex;justify-content:center"></div>
         <div class="actions">
-          <button class="sec" onclick="imprimirShrink()">Imprimir shrink (48×18)</button>
+          <button class="sec" onclick="imprimirShrinkKit()">Imprimir shrink KIT (48×18)</button>
+        </div>
+        <div id="shrinkLoteBlock" style="display:none;margin-top:14px">
+          <div class="hint" style="margin-bottom:4px">Etiqueta shrink do LOTE</div>
+          <div id="shrinkWrapLote" style="display:flex;justify-content:center"></div>
+          <div class="actions">
+            <button class="sec" onclick="imprimirShrinkLote()">Imprimir shrink LOTE (48×18)</button>
+          </div>
         </div>
       </div>
 
@@ -243,7 +280,7 @@ let COL={};      // índices de coluna por nome
 let M={};        // modelo editável
 
 function norm(s){return (s==null?'':String(s)).trim();}
-function blankModel(){return {marca:'',desc:'',qtd:'',serie:'',bim:'',cd:'',tag:'KIT',kit:'',bcqty:'',skus:[{cod:'',des:'',fs:12}],fs:{marca:20,desc:15,serie:16,bim:16,cd:12,tag:20,itens:12}};}
+function blankModel(){return {marca:'',desc:'',qtd:'',serie:'',bim:'',cd:'',tag:'KIT',kit:'',bcqty:'',lote:'',skus:[{cod:'',des:'',fs:12}],fs:{marca:20,desc:15,serie:16,bim:16,cd:12,tag:20,itens:12}};}
 
 window.addEventListener('DOMContentLoaded',()=>{ M=blankModel(); fillEditor(); render(); restorePlanilha(); });
 
@@ -290,7 +327,7 @@ function parseBuffer(buf){
   const H=rows[0]||[];
   COL={
     opKit:idx(H,'op do kit'), opItem:idx(H,'op do item'),
-    marca:idx(H,'marca'), bim:idx(H,'bimestre'),
+    marca:idx(H,'marca'), bim:idx(H,'bimestre'), lote:idx(H,'lote'),
     idKit:idx(H,'id_código kit','id_codigo kit'), descKit:idx(H,'id_descrição kit','id_descricao kit'),
     sku:idxExcl(H,['kit'],'id_código sku','id_codigo sku'), desc:idxExcl(H,['kit'],'id_descrição','id_descricao'),
     serie:idx(H,'inf_série','inf_serie','série'), cd:idx(H,'des_cd envio','cd envio')
@@ -442,8 +479,9 @@ function gerar(){
   // rodapé: KIT usa o código do kit; AVULSO usa o SKU do item
   const bckit = mode==='KIT' ? (norm(first[COL.idKit])||norm(first[COL.sku])) : norm(first[COL.sku]);
   const skus=items.map(r=>({cod:norm(r[COL.sku]),des:norm(r[COL.desc]),fs:12}));
+  const lote = COL.lote>=0 ? norm(first[COL.lote]) : '';
 
-  M={marca,desc,qtd,serie,bim,cd,tag,kit:bckit,bcqty:String(qtd).padStart(4,'0'),skus,fs:{marca:20,desc:15,serie:16,bim:16,cd:12,tag:20,itens:12}};
+  M={marca,desc,qtd,serie,bim,cd,tag,kit:bckit,bcqty:String(qtd).padStart(4,'0'),lote,skus,fs:{marca:20,desc:15,serie:16,bim:16,cd:12,tag:20,itens:12}};
   fillEditor();render();
   msg.className='msg ok';msg.textContent=mode+' · '+items.length+' item(ns) carregado(s).';
 }
@@ -459,6 +497,7 @@ function fillEditor(){
   document.getElementById('e_tag').value=M.tag;
   document.getElementById('e_kit').value=M.kit;
   document.getElementById('e_bcqty').value=M.bcqty;
+  document.getElementById('e_lote').value=M.lote||'';
   ['marca','desc','serie','bim','cd','tag','itens'].forEach(k=>{const el=document.getElementById('fv_'+k);if(el)el.textContent=M.fs[k];});
   renderSkuEditor();
 }
@@ -499,11 +538,25 @@ function apply(){
   let bq=document.getElementById('e_bcqty').value;
   if(!bq && M.qtd){bq=String(M.qtd).padStart(4,'0');document.getElementById('e_bcqty').value=bq;}
   M.bcqty=bq;
+  M.lote=document.getElementById('e_lote').value;
   render();
 }
 
 // ---------- render ----------
+const ARCOPLUS_ADDR = ['RIBEIRÃO PRETO/SP','CEP: 14070-971','CAIXA POSTAL: 4042'];
+
+function marcaHTML(){
+  const nome = (M.marca||'').trim();
+  if(nome.toUpperCase()==='ARCOPLUS'){
+    const linhas = ARCOPLUS_ADDR.map(l=>`<div class="marca-addr-line">${esc(l)}</div>`).join('');
+    return `<div class="marca-arcoplus"><div class="marca-nome">${esc(nome)}</div>${linhas}</div>`;
+  }
+  return esc(nome);
+}
+
 function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function isArcoplus(){ return (M.marca||'').trim().toUpperCase()==='ARCOPLUS'; }
+
 function render(){
   let codRows='',desRows='';
   M.skus.forEach(r=>{
@@ -511,16 +564,27 @@ function render(){
     codRows+=`<div class="r" style="font-size:${fs}px">${esc(r.cod)}</div>`;
     desRows+=`<div class="r" style="font-size:${fs}px">${esc(r.des)}</div>`;
   });
+
+  const arco = isArcoplus();
+  const qtyHTML = arco
+    ? `<div class="qtyline arcoplus">
+         <div class="lbl">QUANTIDADE</div>
+         <div class="num">${esc(M.qtd)}</div>
+         <div class="lbl lote-lbl">LOTE</div>
+         <div class="bc"><svg id="bcLoteMain"></svg></div>
+       </div>`
+    : `<div class="qtyline">
+         <div class="lbl">QUANTIDADE</div>
+         <div class="num">${esc(M.qtd)}</div>
+         <div class="bc"><svg id="bcQty"></svg></div>
+       </div>`;
+
   document.getElementById('labelWrap').innerHTML=`
-  <div class="label"><div class="layout142">
+  <div class="label"><div class="layout142 ${arco?'arco':''}">
     <div class="l-top">
-      <div class="marca" style="font-size:${M.fs.marca}px">${esc(M.marca)}</div>
+      <div class="marca" style="font-size:${M.fs.marca}px">${marcaHTML()}</div>
       <div class="desc" style="font-size:${M.fs.desc}px">${esc(M.desc)}</div>
-      <div class="qtyline">
-        <div class="lbl">QUANTIDADE</div>
-        <div class="num">${esc(M.qtd)}</div>
-        <div class="bc"><svg id="bcQty"></svg></div>
-      </div>
+      ${qtyHTML}
     </div>
     <div class="l-colh"><div>ANO/SÉRIE</div><div>CÓDIGO</div><div>DESCRIÇÃO</div></div>
     <div class="l-body">
@@ -537,8 +601,13 @@ function render(){
       <div class="bc"><svg id="bcKit"></svg></div>
     </div>
   </div></div>`;
-  try{if(M.bcqty)JsBarcode("#bcQty",M.bcqty,{format:"CODE128",displayValue:true,fontSize:11,height:36,margin:2});}catch(e){}
-  try{if(M.kit)JsBarcode("#bcKit",M.kit,{format:"CODE128",displayValue:true,fontSize:15,height:48,margin:2});}catch(e){}
+
+  if(arco){
+    try{if(M.lote)JsBarcode("#bcLoteMain",M.lote,{format:"CODE128",displayValue:true,fontSize:14,height:48,margin:2,text:"*"+M.lote+"*"});}catch(e){}
+  }else{
+    try{if(M.bcqty)JsBarcode("#bcQty",M.bcqty,{format:"CODE128",displayValue:true,fontSize:11,height:36,margin:2});}catch(e){}
+  }
+  try{if(M.kit)JsBarcode("#bcKit",M.kit,{format:"CODE128",displayValue:true,fontSize:15,height:48,margin:2,...(isArcoplus()?{text:"*"+M.kit+"*"}:{})});}catch(e){}
   renderShrink();
 }
 
@@ -549,9 +618,23 @@ function renderShrink(){
   box.style.display='block';
   document.getElementById('shrinkWrap').innerHTML=`
     <div class="shrink-label">
+      <div class="stitle">${esc(M.desc)}</div>
       <svg id="bcShrink"></svg>
     </div>`;
-  try{ JsBarcode("#bcShrink", M.kit, {format:"CODE128",displayValue:true,fontSize:9,height:32,width:1.1,margin:0,textMargin:1}); }catch(e){}
+  try{ JsBarcode("#bcShrink", M.kit, {format:"CODE128",displayValue:true,fontSize:8,height:24,width:1.1,margin:0,textMargin:1,...(isArcoplus()?{text:"*"+M.kit+"*"}:{})}); }catch(e){}
+
+  const loteBlock = document.getElementById('shrinkLoteBlock');
+  if(isArcoplus() && M.lote){
+    loteBlock.style.display='block';
+    document.getElementById('shrinkWrapLote').innerHTML=`
+      <div class="shrink-label">
+        <div class="stitle">Lote</div>
+        <svg id="bcShrinkLote"></svg>
+      </div>`;
+    try{ JsBarcode("#bcShrinkLote", M.lote, {format:"CODE128",displayValue:true,fontSize:8,height:24,width:1.1,margin:0,textMargin:1,text:"*"+M.lote+"*"}); }catch(e){}
+  }else{
+    loteBlock.style.display='none';
+  }
 }
 
 // ---------- impressão com @page dinâmico por etiqueta ----------
@@ -564,16 +647,24 @@ function imprimirPrincipal(){
   window.print();
 }
 
-function imprimirShrink(){
+function imprimirShrinkKit(){
   if(M.tag!=='KIT'){ alert('A etiqueta shrink só se aplica a KIT.'); return; }
   setPageSize('@page{size:48mm 18mm;margin:0}');
-  document.body.classList.remove('print-main');
-  document.body.classList.add('print-shrink');
+  document.body.classList.remove('print-main','print-shrink-lote');
+  document.body.classList.add('print-shrink-kit');
+  window.print();
+}
+
+function imprimirShrinkLote(){
+  if(M.tag!=='KIT' || !isArcoplus() || !M.lote){ alert('A etiqueta shrink do LOTE só se aplica a KIT Arcoplus com lote preenchido.'); return; }
+  setPageSize('@page{size:48mm 18mm;margin:0}');
+  document.body.classList.remove('print-main','print-shrink-kit');
+  document.body.classList.add('print-shrink-lote');
   window.print();
 }
 
 window.addEventListener('afterprint',()=>{
-  document.body.classList.remove('print-main','print-shrink');
+  document.body.classList.remove('print-main','print-shrink-kit','print-shrink-lote');
   setPageSize('@page{size:150mm 100mm;margin:0}');
 });
 </script>
