@@ -114,8 +114,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .l-top .qtyline .lbl{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;text-align:center;padding:1mm}
   .l-top .qtyline .lote-lbl{font-size:13px}
   .l-top .qtyline .num{border-right:1.2px solid #000;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:bold}
-  .l-top .qtyline .bc{display:flex;align-items:center;justify-content:center;padding:1mm}
-  .l-top .qtyline .bc svg{max-width:100%;max-height:16mm}
+  .l-top .qtyline .bc{display:flex;align-items:center;justify-content:center;padding:1mm;overflow:hidden;max-height:100%}
+  .l-top .qtyline .bc svg{max-width:99%;max-height:17.5mm}
   .l-colh{display:grid;grid-template-columns:27mm 31mm 90mm;border-bottom:1.2px solid #000;font-size:13px;font-weight:bold;height:5mm}
   .l-colh div{border-right:1px solid #000;padding:0.5mm;text-align:center;display:flex;align-items:center;justify-content:center;overflow:hidden}
   .l-colh div:last-child{border-right:none}
@@ -177,7 +177,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   /* ===== ETIQUETA SHRINK 48x18mm (sem borda) ===== */
   .shrink-label{width:48mm;height:18mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.4mm;background:#fff;overflow:hidden;font-family:Arial,sans-serif;color:#000;padding:0.5mm 0;box-sizing:border-box}
-  .shrink-label .stitle{font-size:13px;font-weight:bold;text-align:center;line-height:1.05;max-width:96%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .shrink-label .stitle{font-size:10px;font-weight:bold;text-align:center;line-height:1.05;max-width:96%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .shrink-label svg{display:block;max-width:96%;max-height:12.5mm}
 </style>
 <style id="pagesizeStyle">@page{size:150mm 100mm;margin:0}</style>
@@ -605,7 +605,7 @@ function render(){
   </div></div>`;
 
   if(arco){
-    try{if(M.lote)JsBarcode("#bcLoteMain",M.lote,{format:"CODE128",displayValue:true,fontSize:24,height:46,marginTop:6,marginLeft:10,marginRight:10,marginBottom:10,text:"*"+M.lote+"*"});}catch(e){}
+    try{if(M.lote)JsBarcode("#bcLoteMain",M.lote,{format:"CODE128",displayValue:true,fontSize:24,height:58,marginTop:4,marginLeft:8,marginRight:8,marginBottom:8,text:"*"+M.lote+"*"});}catch(e){}
   }else{
     try{if(M.bcqty)JsBarcode("#bcQty",M.bcqty,{format:"CODE128",displayValue:true,fontSize:11,height:36,margin:2});}catch(e){}
   }
