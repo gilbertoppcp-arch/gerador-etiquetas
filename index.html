@@ -392,7 +392,7 @@ function buildOpIndex(){
     const opK=norm(r[COL.opKit]);
     const opI=norm(r[COL.opItem]);
     if(opK && !seen.has('K:'+opK)){seen.add('K:'+opK);OPIDX.push({op:opK,tipo:'KIT',desc:norm(r[COL.descKit])});}
-    if(opI && !norm(r[COL.opKit]) && !seen.has('I:'+opI)){seen.add('I:'+opI);OPIDX.push({op:opI,tipo:'AVULSO',desc:norm(r[COL.desc])});}
+    if(opI && !seen.has('I:'+opI)){seen.add('I:'+opI);OPIDX.push({op:opI,tipo:'AVULSO',desc:norm(r[COL.desc])});}
   });
   OPIDX.sort((a,b)=>a.op.localeCompare(b.op,undefined,{numeric:true}));
 }
@@ -449,12 +449,13 @@ function buscarOP(op){
   // OP do Kit -> KIT
   let items=ROWS.slice(1).filter(r=>norm(r[COL.opKit])===op);
   if(items.length) return {mode:'KIT',items};
-  // OP do Item (sem OP do Kit) -> AVULSO
+  // OP do Item -> AVULSO (a linha pode OU NÃO também ter OP do Kit preenchido —
+  // um item pode pertencer a um kit E TAMBÉM ser impresso avulso pela sua própria OP do Item)
   // 1o tenta correspondência EXATA da OP do Item
-  items=ROWS.slice(1).filter(r=>norm(r[COL.opItem])===op && !norm(r[COL.opKit]));
+  items=ROWS.slice(1).filter(r=>norm(r[COL.opItem])===op);
   // se não achou exato, tenta pela base (ex: digitou 1220336 e só existe 1220336_01)
   if(!items.length){
-    items=ROWS.slice(1).filter(r=>{const b=norm(r[COL.opItem]);return !norm(r[COL.opKit]) && b.split('_')[0]===op;});
+    items=ROWS.slice(1).filter(r=>{const b=norm(r[COL.opItem]);return b.split('_')[0]===op;});
   }
   // avulso é uma única linha: se houver mais de uma, pega a primeira e remove duplicatas de SKU
   const seenSku=new Set();
@@ -611,6 +612,23 @@ function render(){
   }
   try{if(M.kit)JsBarcode("#bcKit",M.kit,{format:"CODE128",displayValue:true,fontSize:16,height:58,marginTop:2,marginLeft:2,marginRight:2,marginBottom:8,...(isArcoplus()?{text:"*"+M.kit+"*"}:{})});}catch(e){}
   renderShrink();
+  autoFitCodigo();
+}
+
+// reduz automaticamente a fonte de cada código (coluna CÓDIGO) até caber por completo,
+// sem cortar com reticências — cada linha encolhe só o necessário, de forma independente
+function autoFitCodigo(){
+  document.querySelectorAll('.l-cod .r').forEach(el=>{
+    el.style.whiteSpace='nowrap';
+    let fs = parseFloat(getComputedStyle(el).fontSize);
+    const original = fs;
+    let guard = 0;
+    while(el.scrollWidth > el.clientWidth && fs > 6 && guard < 40){
+      fs -= 0.5;
+      el.style.fontSize = fs+'px';
+      guard++;
+    }
+  });
 }
 
 // ---------- etiqueta shrink 18x48mm (só quando KIT) ----------
