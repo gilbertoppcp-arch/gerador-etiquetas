@@ -38,7 +38,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--ink);padding:20px}
   .stickytop{position:sticky;top:0;z-index:100;background:var(--bg);margin:-20px -20px 0;padding:20px 20px 8px;box-shadow:0 6px 12px -6px rgba(0,0,0,.18)}
-  @media print{.stickytop{position:static;box-shadow:none}}
+  @media print{.stickytop{position:static;box-shadow:none;margin:0;padding:0;background:none}}
   .top{background:var(--ink);color:#fff;padding:16px 22px;border-radius:8px 8px 0 0;border-bottom:3px solid var(--accent);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .uploadHdr{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
   .uploadHdr button{white-space:nowrap;background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.18);border-radius:999px;padding:10px 20px;display:inline-flex;align-items:center;gap:8px}
@@ -146,7 +146,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     body{background:#fff;padding:0;margin:0}
     .top,.card,.editor,.actions,.msg{display:none}
     .layout{margin:0;gap:0;display:flex;justify-content:center;align-items:center;width:100%}
-    .label{border:none;page-break-after:always;margin:0 auto}
+    .label{border:none;margin:0 auto}
     /* modo principal: mostra só a etiqueta 150x100, esconde o bloco shrink */
     body.print-main #shrinkPreview{display:none !important}
     body.print-main .preview h3{display:none}
