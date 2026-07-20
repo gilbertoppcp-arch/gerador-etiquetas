@@ -140,13 +140,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   .layout142.arco .l-body{grid-template-columns:40mm 28mm 80mm}
   /* faixa QUANTIDADE/LOTE precisa somar 108mm (142-34) para caber sem estourar,
      e a 1ª divisória (após QUANTIDADE) fica em 28mm para alinhar com a linha CÓDIGO/DESCRIÇÃO */
-  .layout142.arco .qtyline.arcoplus{grid-template-columns:28mm 25mm 18mm 37mm}
+  .layout142.arco .qtyline.arcoplus{grid-template-columns:28mm 16mm 13mm 51mm}
   .actions{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
   @media print{
-    body{background:#fff;padding:0}
+    body{background:#fff;padding:0;margin:0}
     .top,.card,.editor,.actions,.msg{display:none}
-    .layout{margin:0;gap:0;display:block}
-    .label{border:none;page-break-after:always}
+    .layout{margin:0;gap:0;display:flex;justify-content:center;align-items:center;width:100%;min-height:100vh}
+    .label{border:none;page-break-after:always;margin:0 auto}
     /* modo principal: mostra só a etiqueta 150x100, esconde o bloco shrink */
     body.print-main #shrinkPreview{display:none !important}
     body.print-main .preview h3{display:none}
@@ -621,7 +621,6 @@ function autoFitCodigo(){
   document.querySelectorAll('.l-cod .r').forEach(el=>{
     el.style.whiteSpace='nowrap';
     let fs = parseFloat(getComputedStyle(el).fontSize);
-    const original = fs;
     let guard = 0;
     while(el.scrollWidth > el.clientWidth && fs > 6 && guard < 40){
       fs -= 0.5;
@@ -629,6 +628,19 @@ function autoFitCodigo(){
       guard++;
     }
   });
+  // protege o número da QUANTIDADE (coluna ficou bem estreita para dar espaço ao barcode do lote):
+  // se a quantidade tiver muitos dígitos, encolhe a fonte em vez de cortar
+  const numEl = document.querySelector('.qtyline .num');
+  if(numEl){
+    numEl.style.whiteSpace='nowrap';
+    let fs = 40, guard = 0;
+    numEl.style.fontSize = fs+'px';
+    while(numEl.scrollWidth > numEl.clientWidth && fs > 14 && guard < 40){
+      fs -= 1;
+      numEl.style.fontSize = fs+'px';
+      guard++;
+    }
+  }
 }
 
 // ---------- etiqueta shrink 18x48mm (só quando KIT) ----------
